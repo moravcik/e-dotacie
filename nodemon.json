@@ -1,0 +1,10 @@
+{
+  "ext": "js ts",
+  "watch": [
+    "dist",
+    "package.json"
+  ],
+  "env": {
+    "PORT": 5000
+  }
+}
