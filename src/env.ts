@@ -4,6 +4,8 @@ const DEFAULT_XPATH_PDF_LABEL = 'string(/html/body/section[2]/div/article/div/ul
 const DEFAULT_XPATH_PDF_URL = 'string(/html/body/section[2]/div/article/div/ul/li[20]/ul/li[24]/a/@href)';
 const DEFAULT_EXPIRATION_MILLIS = '600000'; // 10 mins
 
+export const environment = process.env.NODE_ENV || 'development';
+
 export const pageUrl = process.env.PAGE_URL || DEFAULT_PAGE_URL;
 export const xpathPdfLabel = process.env.XPATH_PDF_LABEL || DEFAULT_XPATH_PDF_LABEL;
 export const xpathPdfUrl = process.env.XPATH_PDF_URL || DEFAULT_XPATH_PDF_URL;

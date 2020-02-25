@@ -5,13 +5,16 @@ import * as rp from 'request-promise';
 import * as xpath from 'xpath';
 import { DOMParser } from 'xmldom';
 
-import { expirationMillis, gaId, pageUrl, xpathPdfLabel, xpathPdfUrl } from './env';
+import { environment, expirationMillis, gaId, pageUrl, xpathPdfLabel, xpathPdfUrl } from './env';
 
 type Pdf = {
   label: string;
   url: string;
   timestamp: number;
+  buffer?: Buffer;
 }
+
+const hostUrl = environment === 'production' ? 'https://e-dotacie.herokuapp.com' : 'http://localhost:5000';
 
 export default function startServer() {
   const app = express();
@@ -21,7 +24,14 @@ export default function startServer() {
   app.use(morgan('dev')); // log requests to console
 
   app.get('/pdf', async (req, res) => {
+    const pdfBuffer = await resolvePdfBuffer();
+    res.type('application/pdf');
+    res.end(pdfBuffer, 'binary');
+  });
+
+  app.get('/view', async (req, res) => {
     const { url } = await resolvePdf();
+    const pdfUrl = environment === 'production' ? 'https://e-dotacie.herokuapp.com/pdf' : url;
     res.send(`
 <html>
   <head>
@@ -29,7 +39,7 @@ export default function startServer() {
     ${gaSnippet}
   </head>
   <body style="margin: 0px; padding: 0px">
-    <iframe src="https://docs.google.com/gview?url=${url}&embedded=true" style="width:100%; height:100%;" frameborder="0"></iframe>
+    <iframe src="https://docs.google.com/gview?url=${pdfUrl}&embedded=true" style="width:100%; height:100%;" frameborder="0"></iframe>
   </body>
 </html>
 `)
@@ -49,7 +59,7 @@ export default function startServer() {
       <div class="jumbotron my-auto">
         <h3 class="display-5">Predbežné vyhodnotenie žiadostí o dotácie na nákup elektromobilov a plug-in hybridov</h3>
         <p class="lead"><a href="${url}">${label}</a></p>
-        <p><a href="/pdf" class="btn btn-primary" target="_blank">Otvoriť PDF</a></p>
+        <p><a href="/view" class="btn btn-primary" target="_blank">Otvoriť PDF</a></p>
         <hr class="my-4">
         <p>Zdroj: <a href="${pageUrl}">${pageUrl}</a></p>
       </div>
@@ -102,4 +112,13 @@ async function resolvePdf(): Promise<Pdf> {
   console.log('PDF resolved')
   console.log(pdf);
   return pdf;
+}
+
+async function resolvePdfBuffer(): Promise<Buffer> {
+  const { url } = await resolvePdf();
+  if (!pdf.buffer) {
+    console.log('getting PDF buffer');
+    pdf.buffer = await rp.get({ url, encoding: null });
+  }
+  return pdf.buffer;
 }
