@@ -49,6 +49,7 @@ export default function startServer() {
       <div class="jumbotron my-auto">
         <h3 class="display-5">Predbežné vyhodnotenie žiadostí o dotácie na nákup elektromobilov a plug-in hybridov</h3>
         <p class="lead"><a href="${url}">${label}</a></p>
+        <p><a href="/pdf" class="btn btn-primary" target="_blank">Otvoriť PDF</a></p>
         <hr class="my-4">
         <p>Zdroj: <a href="${pageUrl}">${pageUrl}</a></p>
       </div>

@@ -1,8 +1,7 @@
 {
   "ext": "js ts",
   "watch": [
-    "dist",
-    "package.json"
+    "dist"
   ],
   "env": {
     "PORT": 5000
